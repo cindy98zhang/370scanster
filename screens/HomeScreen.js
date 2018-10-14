@@ -7,15 +7,34 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button,
+  Alert,
+  CameraRoll,
+  TouchableHighlight,
 } from 'react-native';
 import { WebBrowser } from 'expo';
-
 import { MonoText } from '../components/StyledText';
 
 export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
+  getPhotosFromGallery() {
+    CameraRoll.getPhotos({ first: 1000000 })
+      .then(res => {
+        console.log(res, "images data")
+      })
+  }
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: 'Welcome',
+      headerTintColor: 'black',
+      headerStyle: {
+        backgroundColor: '#fbefcc',
+      },
+      headerTitleStyle: {
+      fontWeight: 'bold',
+    },
+
+    }
+  }
 
   render() {
     return (
@@ -24,7 +43,7 @@ export default class HomeScreen extends React.Component {
           <View style={styles.sprintContainer}>
 
             <View style={styles.highlightContainer}>
-              <MonoText style={styles.highlightText}>Sprint One</MonoText>
+              <Text style={styles.highlightText}>We Textify Everything!</Text>
             </View>
           </View>
           <View style={styles.iconContainer}>
@@ -37,11 +56,32 @@ export default class HomeScreen extends React.Component {
               style={styles.iconImage}
             />
           </View>
+          <View style = {styles.alignClickable}><Button 
+          title = "Take Photos" 
+          onPress = {
+            () => {Alert.alert('You tapped the button!');}
+          } 
+          />
+          <TouchableHighlight>
+          <Image
+            source={require('../assets/images/camera.png')} />
+          </TouchableHighlight>
+          </View>
+          <View style = {styles.alignClickable}><Button 
+          title = "Camera Roll" 
+          onPress={() => this.getPhotosFromGallery()} 
+          />
+          <TouchableHighlight>
+          <Image
+            source={require('../assets/images/addPhoto.png')} />
+          </TouchableHighlight>
+          </View>
+          
         </ScrollView>
 
         <View style={styles.tabBarInfoContainer}>
           <View style={[styles.highlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.highlightText}>Yo! Click our logo to access the camera!</MonoText>
+            <MonoText style={styles.highlightText}>Click the Buttons to Discover Goodies!</MonoText>
           </View>
         </View>
       </View>
@@ -50,6 +90,12 @@ export default class HomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  alignClickable: {
+    flex: 1, 
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -77,9 +123,10 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     color: 'rgba(96,100,109, 0.8)',
+    fontSize: 14,
   },
   highlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    //backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
     paddingHorizontal: 4,
   },
@@ -101,7 +148,7 @@ const styles = StyleSheet.create({
     }),
     alignItems: 'center',
     backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   navigationFilename: {
     marginTop: 5,

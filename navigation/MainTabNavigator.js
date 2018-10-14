@@ -31,8 +31,9 @@ const BlankStack = createStackNavigator({
   Blank: BlankScreen,
 });
 
+
 BlankStack.navigationOptions = {
-  tabBarLabel: 'Blank',
+  tabBarLabel: 'Files',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -49,3 +50,4 @@ export default createBottomTabNavigator({
   HomeStack,
   BlankStack
 });
+

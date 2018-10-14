@@ -14,7 +14,7 @@ import { MonoText } from '../components/StyledText';
 
 export default class BlankScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    headerTitle: "File Station",
   };
 
   render() {
