@@ -60,7 +60,7 @@ export default class HomeScreen extends React.Component {
           title = "Take Photos" 
           onPress = {this._takePhoto}
           />
-          <TouchableHighlight>
+          <TouchableHighlight onPress = {this._takePhoto}>
           <Image
             source={require('../assets/images/camera.png')} />
           </TouchableHighlight>
@@ -69,13 +69,11 @@ export default class HomeScreen extends React.Component {
           title = "Camera Roll" 
           onPress={this._pickImage} 
           />
-          <TouchableHighlight>
+          <TouchableHighlight onPress={this._pickImage}>
           <Image
             source={require('../assets/images/addPhoto.png')} />
           </TouchableHighlight>
 
-          {this._maybeRenderImage()}
-          {this._maybeRenderUploadingOverlay()}
           </View>
           
         </ScrollView>
@@ -88,36 +86,6 @@ export default class HomeScreen extends React.Component {
       </View>
     );
   }
-
-  _maybeRenderUploadingOverlay = () => {
-    if (this.state.uploading) {
-      return (
-        <View
-          style={[StyleSheet.absoluteFill, styles.maybeRenderUploading]}>
-        </View>
-      );
-    }
-  };
-
-  _maybeRenderImage = () => {
-    let {
-      image
-    } = this.state;
-
-    if (!image) {
-      return;
-    }
-
-    return (
-      <View
-        style={styles.maybeRenderContainer}>
-        <View
-          style={styles.maybeRenderImageContainer}>
-          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
-        </View>
-      </View>
-    );
-  };
 
   _takePhoto = async () => {
     const {
@@ -143,7 +111,6 @@ export default class HomeScreen extends React.Component {
       status: cameraRollPerm
     } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
-    // only if user allows permission to camera roll
     if (cameraRollPerm === 'granted') {
       let pickerResult = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
@@ -195,37 +162,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  maybeRenderUploading: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-  },
-  maybeRenderContainer: {
-    borderRadius: 3,
-    elevation: 2,
-    marginTop: 30,
-    shadowColor: 'rgba(0,0,0,1)',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: 4,
-      width: 4,
-    },
-    shadowRadius: 5,
-    width: 250,
-  },
-  maybeRenderImageContainer: {
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-    overflow: 'hidden',
-  },
-  maybeRenderImage: {
-    height: 250,
-    width: 250,
-  },
-  maybeRenderImageText: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
+
   contentContainer: {
     paddingTop: 30,
   },
