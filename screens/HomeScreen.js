@@ -115,13 +115,6 @@ export default class HomeScreen extends React.Component {
           style={styles.maybeRenderImageContainer}>
           <Image source={{ uri: image }} style={styles.maybeRenderImage} />
         </View>
-
-        <Text
-          onPress={this._copyToClipboard}
-          onLongPress={this._share}
-          style={styles.maybeRenderImageText}>
-          {image}
-        </Text>
       </View>
     );
   };
