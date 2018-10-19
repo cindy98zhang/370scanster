@@ -11,13 +11,12 @@ import {
   Alert,
   TouchableHighlight,
 } from 'react-native';
-import { WebBrowser, ImagePicker, Permissions} from 'expo';
+import { WebBrowser, ImagePicker, Permissions, FileSystem} from 'expo';
 import { MonoText } from '../components/StyledText';
 
 export default class HomeScreen extends React.Component {
   state = {
-    image: null,
-    uploading: false,
+    refresh: true
   }
   
   static navigationOptions = ({ navigation }) => {
@@ -32,6 +31,13 @@ export default class HomeScreen extends React.Component {
     },
 
     }
+  }
+
+  componentDidMount() {
+    	FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos')
+    		.catch(e => {
+      			return;// wtv, dir probably exists
+      		});
   }
 
   render() {
@@ -98,6 +104,8 @@ export default class HomeScreen extends React.Component {
 
     if (cameraPerm === 'granted' && cameraRollPerm === 'granted') {
       let pickerResult = await ImagePicker.launchCameraAsync({
+        quality: 1.0,
+        // only for android
         allowsEditing: true,
         aspect: [4, 3],
       });
@@ -117,36 +125,24 @@ export default class HomeScreen extends React.Component {
         aspect: [4, 3],
       });
 
+      console.log(pickerResult);
+
       this._handleImagePicked(pickerResult);
     }
   };
 
   _handleImagePicked = async pickerResult => {
-    let uploadResponse, uploadResult;
 
     try {
-      this.setState({
-        uploading: true
-      });
-
       if (!pickerResult.cancelled) {
-        uploadResponse = await uploadImageAsync(pickerResult.uri);
-        uploadResult = await uploadResponse.json();
-
-        this.setState({
-          image: uploadResult.location
-        });
+        await FileSystem.moveAsync({
+        	from: pickerResult.uri,
+        	to: `${FileSystem.documentDirectory}photos/Photo_${Date.now()}.jpg`
+      	});
       }
     } catch (e) {
-      console.log({ uploadResponse });
-      console.log({ uploadResult });
-      console.log({ e });
-      alert('Upload failed, sorry :(');
-    } finally {
-      this.setState({
-        uploading: false
-      });
-    }
+      alert('Ooooooops...Something Went Wrong :(');
+    } 
   };
 
 }
