@@ -68,12 +68,14 @@ export default class BlankScreen extends React.Component {
     return (
       <TouchableOpacity 
         onPress = {this._showAlert}>
+      <View>
       <Image
         style={styles.photo}
         source={{
           uri: `${FileSystem.documentDirectory}photos/${item}`,
         }}
       />
+      </View>
       </TouchableOpacity>
     );
   }

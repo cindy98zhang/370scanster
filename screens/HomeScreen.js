@@ -6,20 +6,38 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
+  NativeModules,
   Button,
   Alert,
   TouchableHighlight,
 } from 'react-native';
-import { WebBrowser, ImagePicker, Permissions, FileSystem} from 'expo';
+import ImagePicker from 'react-native-image-picker';
+import { WebBrowser, Permissions, FileSystem} from 'expo';
 import { MonoText } from '../components/StyledText';
+import CameraScreen from './CameraScreen';
+
+var Scanner = NativeModules.TextDetector;
+var GMVScanner = NativeModules.GMVTextDetector;
+
 
 export default class HomeScreen extends React.Component {
-  state = {
-    refresh: true
+  constructor(props) {
+   super(props);
+   this.state = {
+     imageURI: null,
+     width: null,
+     height: null,
+   }
   }
-  
+  componentDidMount() {
+    	FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos')
+    		.catch(e => {});
+  }
+
   static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
     return {
       headerTitle: 'Welcome',
       headerTintColor: 'black',
@@ -27,17 +45,44 @@ export default class HomeScreen extends React.Component {
         backgroundColor: '#fbefcc',
       },
       headerTitleStyle: {
-      fontWeight: 'bold',
-    },
-
+        fontWeight: 'bold',
+      },
     }
   }
 
-  componentDidMount() {
-    	FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos')
-    		.catch(e => {
-      			return;// wtv, dir probably exists
-      		});
+  async scan() {
+    try {
+      // const image = require("../assets/sample_image.png");
+      const imageURL = this.state.image;
+      // const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+      // const resolvedImage = resolveAssetSource(image);
+      var recognizedTextArray = await Scanner.scan(imageURL);
+      var recognizedText = [];
+      if (recognizedTextArray != undefined && recognizedTextArray.length != 0) {
+        recognizedText = recognizedTextArray.map(block => block['text']);
+      }
+      alert(recognizedText.join(' '));
+      console.log(recognizedText.join(' '));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async scanTest() {
+    try {
+      // const image = require("../assets/sample_image.png");
+      const imageURL = this.state.image;
+      // const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+      // const resolvedImage = resolveAssetSource(image);
+      var recognizedTextArray = await GMVScanner.scan(imageURL);
+      // const recognizedText = recognizedTextArray.map(block => block['text'])
+      // const recognizedText = recognizedTextArray.map(block => block['text']);
+      // alert(recognizedText.join(' '));
+      // console.log(recognizedText.join(' '));
+      alert(recognizedTextArray);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   render() {
@@ -47,41 +92,38 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.sprintContainer}>
-
             <View style={styles.highlightContainer}>
               <Text style={styles.highlightText}>We Textify Everything!</Text>
             </View>
           </View>
-          <View style={styles.iconContainer}>
+          <TouchableWithoutFeedback onPress={this.scan}>
+            <View style={styles.iconContainer}>
+              <Image
+                source={
+                  __DEV__
+                    ? require('../assets/images/icon.png')
+                    : require('../assets/images/icon.png')
+                }
+                style={styles.iconImage}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+          <View style = {styles.alignClickable}>
+            <Button title = "Take Photos" onPress = {this._takePhoto}/>
+            <TouchableHighlight onPress = {this._takePhoto}>
+              <Image
+                source={require('../assets/images/camera.png')} />
+            </TouchableHighlight>
+          </View>
+          <View style = {styles.alignClickable}><Button
+            title = "Camera Roll"
+            onPress={this._pickImage}
+          />
+            <TouchableHighlight onPress={this._pickImage}>
             <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/icon.png')
-                  : require('../assets/images/icon.png')
-              }
-              style={styles.iconImage}
-            />
+              source={require('../assets/images/addPhoto.png')} />
+            </TouchableHighlight>
           </View>
-          <View style = {styles.alignClickable}><Button 
-          title = "Take Photos" 
-          onPress = {this._takePhoto}
-          />
-          <TouchableHighlight onPress = {this._takePhoto}>
-          <Image
-            source={require('../assets/images/camera.png')} />
-          </TouchableHighlight>
-          </View>
-          <View style = {styles.alignClickable}><Button 
-          title = "Camera Roll" 
-          onPress={this._pickImage} 
-          />
-          <TouchableHighlight onPress={this._pickImage}>
-          <Image
-            source={require('../assets/images/addPhoto.png')} />
-          </TouchableHighlight>
-
-          </View>
-          
         </ScrollView>
 
         <View style={styles.tabBarInfoContainer}>
@@ -94,62 +136,64 @@ export default class HomeScreen extends React.Component {
   }
 
   _takePhoto = async () => {
-    const {
-      status: cameraPerm
-    } = await Permissions.askAsync(Permissions.CAMERA);
-
-    const {
-      status: cameraRollPerm
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-    if (cameraPerm === 'granted' && cameraRollPerm === 'granted') {
-      let pickerResult = await ImagePicker.launchCameraAsync({
-        quality: 1.0,
-        // only for android
-        allowsEditing: true,
-        aspect: [4, 3],
-      });
-
-      this._handleImagePicked(pickerResult);
-    }
+    this.props.navigation.navigate('Camera');
   };
 
   _pickImage = async () => {
-    const {
-      status: cameraRollPerm
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const options = {};
+    ImagePicker.launchImageLibrary(options, (response) => {
+      console.log('Response = ', response);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const { uri, width, height} = response;
 
-    if (cameraRollPerm === 'granted') {
-      let pickerResult = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [4, 3],
-      });
+        // You can also display the image using data:
+        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          image: uri,
+          width: width,
+          heigth: height,
+        });
+        this.props.navigation.navigate('Cropper', {
+          imageURI: uri,
+          width: width,
+          height: height,
+        });
+      }
+    });
+  };
 
+  _handleImagePicked = async pickerResult => {
+    try {
+        await FileSystem.moveAsync({
+          from: pickerResult,
+          to: `${FileSystem.documentDirectory}photos/Photo_${Date.now()}.jpg`
+        });
+    } catch (e) {
+      alert('Ooooooops...Something Went Wrong :(');
+    }
+  };
+
+  _handleImageTaken = async pickerResult => {
+    if (!pickerResult.cancelled) {
+      this.setState({ image: pickerResult.uri });
+      this.scan();
+    }
       console.log(pickerResult);
 
       this._handleImagePicked(pickerResult);
     }
   };
 
-  _handleImagePicked = async pickerResult => {
-
-    try {
-      if (!pickerResult.cancelled) {
-        await FileSystem.moveAsync({
-        	from: pickerResult.uri,
-        	to: `${FileSystem.documentDirectory}photos/Photo_${Date.now()}.jpg`
-      	});
-      }
-    } catch (e) {
-      alert('Ooooooops...Something Went Wrong :(');
-    } 
-  };
-
-}
 
 const styles = StyleSheet.create({
   alignClickable: {
-    flex: 1, 
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
