@@ -9,7 +9,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  FlatList
+  FlatList,
+  ImageBackground
 } from 'react-native';
 import { WebBrowser, FileSystem, ImagePicker, Permissions, Constants} from 'expo';
 
@@ -35,7 +36,7 @@ export default class BlankScreen extends React.Component {
       if (dirInfo.exists) {
         const photos = await FileSystem.readDirectoryAsync(PHOTO_DIR);
         this.setState({ photos });
-      } 
+      }
   }
 
   async componentDidUpdate() {
@@ -44,7 +45,7 @@ export default class BlankScreen extends React.Component {
       if (dirInfo.exists) {
         const photos = await FileSystem.readDirectoryAsync(PHOTO_DIR);
         this.setState({ photos });
-      } 
+      }
     }
   }
 
@@ -66,7 +67,7 @@ export default class BlankScreen extends React.Component {
 
   renderPhoto({ item }) {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress = {this._showAlert}>
       <View>
       <Image
@@ -89,13 +90,14 @@ export default class BlankScreen extends React.Component {
 
   render() {
     return (
+        <ImageBackground source={require('../assets/images/bg.png')} style={{width: '100%', height: '100%'}}>
       <View style={styles.container}>
-        <ScrollView 
-          style={styles.container} 
-          contentContainerStyle={styles.contentContainer} 
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
           refreshControl={
-            <RefreshControl 
-              refreshing={this.state.refreshing} 
+            <RefreshControl
+              refreshing={this.state.refreshing}
               onRefresh={this._onRefresh}
             />
           }
@@ -108,6 +110,7 @@ export default class BlankScreen extends React.Component {
           />
         </ScrollView>
       </View>
+      </ImageBackground>
     );
   }
 }
@@ -115,7 +118,6 @@ export default class BlankScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   contentContainer: {
     paddingTop: 30,

@@ -12,6 +12,7 @@ import {
   Button,
   Alert,
   TouchableHighlight,
+  ImageBackground
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import { WebBrowser, Permissions, FileSystem} from 'expo';
@@ -85,29 +86,29 @@ export default class HomeScreen extends React.Component {
     }
   }
 
+
   render() {
     let {image} = this.state;
 
     return (
+        <ImageBackground source={require('../assets/images/bg3.png')} style={{width: '100%', height: '100%'}}>
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.sprintContainer}>
-            <View style={styles.highlightContainer}>
-              <Text style={styles.highlightText}>We Textify Everything!</Text>
-            </View>
-          </View>
-          <TouchableWithoutFeedback onPress={this.scan}>
-            <View style={styles.iconContainer}>
-              <Image
-                source={
-                  __DEV__
-                    ? require('../assets/images/icon.png')
-                    : require('../assets/images/icon.png')
-                }
-                style={styles.iconImage}
-              />
-            </View>
-          </TouchableWithoutFeedback>
+
+      <View style={styles.iconContainer}>
+        <Image
+          source={
+            __DEV__
+              ? require('../assets/images/logo.png')
+              : require('../assets/images/logo.png')
+          }
+          style={styles.iconImage}
+        />
+      </View>
+              <View style={styles.hContainer}>
+                <MonoText style={styles.highlightText1}>We Textify EVERYTHING!</MonoText>
+              </View>
+
+  <View style={styles.alignClickable1}>
           <View style = {styles.alignClickable}>
             <Button title = "Take Photos" onPress = {this._takePhoto}/>
             <TouchableHighlight onPress = {this._takePhoto}>
@@ -115,6 +116,7 @@ export default class HomeScreen extends React.Component {
                 source={require('../assets/images/camera.png')} />
             </TouchableHighlight>
           </View>
+
           <View style = {styles.alignClickable}><Button
             title = "Camera Roll"
             onPress={this._pickImage}
@@ -124,16 +126,18 @@ export default class HomeScreen extends React.Component {
               source={require('../assets/images/addPhoto.png')} />
             </TouchableHighlight>
           </View>
-        </ScrollView>
 
+  </View>
         <View style={styles.tabBarInfoContainer}>
           <View style={[styles.highlightContainer, styles.navigationFilename]}>
             <MonoText style={styles.highlightText}>Click the Buttons to Discover Goodies!</MonoText>
           </View>
         </View>
       </View>
+        </ImageBackground>
     );
   }
+
 
   _takePhoto = async () => {
     this.props.navigation.navigate('Camera');
@@ -152,8 +156,6 @@ export default class HomeScreen extends React.Component {
       } else {
         const { uri, width, height} = response;
 
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
           image: uri,
           width: width,
@@ -170,10 +172,12 @@ export default class HomeScreen extends React.Component {
 
   _handleImagePicked = async pickerResult => {
     try {
+      if (!pickerResult.cancelled) {
         await FileSystem.moveAsync({
-          from: pickerResult,
+          from: pickerResult.uri,
           to: `${FileSystem.documentDirectory}photos/Photo_${Date.now()}.jpg`
         });
+      }
     } catch (e) {
       alert('Ooooooops...Something Went Wrong :(');
     }
@@ -190,46 +194,62 @@ export default class HomeScreen extends React.Component {
     }
   };
 
-
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
   alignClickable: {
     flex: 1,
     flexDirection: 'row',
+    //marginTop:10,
+    // marginBottom:5,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+  },alignClickable1: {
+    flex: 1,
+    flexDirection: 'column',
+    marginTop:60,
+    marginBottom:70,
+    justifyContent: 'center',
+  //  alignItems: 'flex-start',
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-
-  contentContainer: {
-    paddingTop: 30,
   },
   iconContainer: {
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10
   },
   iconImage: {
     width: 300,
     height: 300,
     resizeMode: 'contain',
     marginTop: 30,
+
   },
-  sprintContainer: {
+  bstyle:{
+    height: 20,
+    borderRadius: 5,
+    backgroundColor: 'white',
     alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
+    margin:15,
+    justifyContent: 'center',
   },
   highlightText: {
-    color: 'rgba(96,100,109, 0.8)',
+    color: 'black',
     fontSize: 14,
   },
+  highlightText1: {
+    color: 'black',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  hContainer: {
+    alignItems: 'center',
+    borderRadius: 3,
+    paddingHorizontal: 4,
+    marginTop: 410,
+    marginBottom:20,
+  },
   highlightContainer: {
-    //backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
     paddingHorizontal: 4,
   },
@@ -256,4 +276,4 @@ const styles = StyleSheet.create({
   navigationFilename: {
     marginTop: 5,
   }
-});
+  });

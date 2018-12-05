@@ -13,8 +13,11 @@ import {
     ScrollView,
     Alert,
     Share,
+    Platform,
+    ImageBackground
 } from 'react-native';
 import RNFS from 'react-native-fs';
+import { MonoText } from '../components/StyledText';
 
 export default class FileScreen extends React.Component {
   constructor(props) {
@@ -140,7 +143,7 @@ export default class FileScreen extends React.Component {
        onPress={() => this.fileOption(f.path)}
        //onLongPress={() => this.deleteFile(f.path)}
      >
-       <Text style={styles.countText}>{f.name}{"\n"}</Text>
+       <Text style={styles.highlightText1}>{f.name}{"\n"}</Text>
      </TouchableOpacity>)
    ))
   }
@@ -148,39 +151,72 @@ export default class FileScreen extends React.Component {
   render() {
     const { navigation } = this.props;
     return(
-      <ScrollView style={styles.container}>
+        <ImageBackground source={require('../assets/images/bg.png')} style={{width: '100%', height: '100%'}}>
+    <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
        {this.renderIcons()} // call the helper method to load all the files
       </View>
       </ScrollView>
+      <View style={styles.tabBarInfoContainer}>
+        <View style={[styles.highlightContainer, styles.navigationFilename]}>
+          <MonoText style={styles.highlightText}>Click the file to EDIT/SHARE/DELETE </MonoText>
+        </View>
+      </View>
+      </ImageBackground>
     )
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //justifyContent: 'center',
-    paddingHorizontal: 10,
-    //contentCenter: true
-    borderColor: 'black',
 
+    paddingHorizontal: 10
   },
   button: {
-    // alignItems: 'center',
-    backgroundColor: 'transparent',
-
-    //fontSize: 16,
-    // padding: 10
+      height: 40,
+      borderRadius: 5,
+      backgroundColor: 'white',
+      alignItems: 'center',
+      margin:15,
+      justifyContent: 'center',
   },
   countContainer: {
     alignItems: 'center',
     padding: 10
   },
-  countText: {
-    color: '#BF7F3F',
+  highlightContainer: {
+    borderRadius: 3,
+    paddingHorizontal: 4,
+  },
+  tabBarInfoContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'black',
+        shadowOffset: { height: -3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 20,
+      },
+    }),
+    alignItems: 'center',
+    backgroundColor: '#fbfbfb',
+    paddingVertical: 10,
+  },
+  highlightText: {
+    color: 'black',
+    fontSize: 16,
+  },
+  highlightText1: {
+    color: 'black',
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'Helvetica',
-  }
+  },
+  contentContainer: {
+    paddingVertical: 20
+  },
 })
