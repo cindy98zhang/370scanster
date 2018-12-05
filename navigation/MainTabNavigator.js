@@ -66,13 +66,13 @@ const TextStack = createStackNavigator(
 );
 
 TextStack.navigationOptions = {
-  tabBarLabel: 'Text',
+  tabBarLabel: 'File',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
+          ? `ios-albums${focused ? '' : '-outline'}`
           : 'md-information-circle'
       }
     />
@@ -104,7 +104,7 @@ RootStack.navigationOptions = {
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
+          ? `ios-book${focused ? '' : '-outline'}`
           : 'md-information-circle'
       }
     />
@@ -119,7 +119,7 @@ const BlankStack = createStackNavigator({
 
 
 BlankStack.navigationOptions = {
-  tabBarLabel: 'Files',
+  tabBarLabel: 'About Us',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -135,8 +135,8 @@ BlankStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   RootStack,
-  BlankStack,
   TextStack,
+  BlankStack,
 },{
   initialRouteName: 'RootStack',
   navigationOptions: ({navigation}) => ({

@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   button: {
       height: 40,
       borderRadius: 5,
-      backgroundColor: 'white',
+      backgroundColor: 'rgba(100,100,100, 0.5)',
       alignItems: 'center',
       margin:15,
       justifyContent: 'center',
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     right: 0,
     ...Platform.select({
       ios: {
-        shadowColor: 'black',
+        shadowColor: 'brown',
         shadowOffset: { height: -3 },
         shadowOpacity: 0.1,
         shadowRadius: 3,

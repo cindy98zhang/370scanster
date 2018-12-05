@@ -14,100 +14,31 @@ import {
 } from 'react-native';
 import { WebBrowser, FileSystem, ImagePicker, Permissions, Constants} from 'expo';
 
-import { MonoText } from '../components/StyledText';
-
-const PHOTO_DIR = `${FileSystem.documentDirectory}photos/`;
 
 export default class BlankScreen extends React.Component {
   static navigationOptions = {
-    headerTitle: "Photo Gallery",
+    headerTitle: "About Us",
   };
 
   constructor(props){
     super(props);
-    this.state = {
-      photos: [],
-      refreshing: false,
-    };
-  }
-
-  async componentWillMount() {
-      const dirInfo = await FileSystem.getInfoAsync(PHOTO_DIR);
-      if (dirInfo.exists) {
-        const photos = await FileSystem.readDirectoryAsync(PHOTO_DIR);
-        this.setState({ photos });
-      }
-  }
-
-  async componentDidUpdate() {
-    if (!this.props.isFocused) {
-      const dirInfo = await FileSystem.getInfoAsync(PHOTO_DIR);
-      if (dirInfo.exists) {
-        const photos = await FileSystem.readDirectoryAsync(PHOTO_DIR);
-        this.setState({ photos });
-      }
-    }
-  }
-
-  deleteImage = () => {
-    //FileSystem.deleteAsync(`${FileSystem.documentDirectory}photos/${item}`)
-  }
-
-  _showAlert = () => {
-    Alert.alert(
-      'Just to Confirm',
-      'Are you sure you want to delete this image?',
-      [
-        {text: "Cancel", onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        {text: "OK", onPress: () => this.deleteImage()},
-      ],
-      { cancelable: false }
-    )
-  }
-
-  renderPhoto({ item }) {
-    return (
-      <TouchableOpacity
-        onPress = {this._showAlert}>
-      <View>
-      <Image
-        style={styles.photo}
-        source={{
-          uri: `${FileSystem.documentDirectory}photos/${item}`,
-        }}
-      />
-      </View>
-      </TouchableOpacity>
-    );
-  }
-
-  _onRefresh = () => {
-    this.setState({refreshing: true});
-    this.componentDidUpdate().then(() => {
-      this.setState({refreshing: false});
-    });
   }
 
   render() {
     return (
-        <ImageBackground source={require('../assets/images/bg.png')} style={{width: '100%', height: '100%'}}>
+      <ImageBackground source={require('../assets/images/bg.png')} style={{width: '100%', height: '100%'}}>
       <View style={styles.container}>
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
-          }
-        ><FlatList
-            style={styles.list}
-            data={this.state.photos}
-            renderItem={this.renderPhoto}
-            keyExtractor={item => item}
-            numColumns={2}
-          />
+        <ScrollView >
+         <Text style={styles.body}>
+          Hi there,{"\n"}{"\n"}
+
+          We hope you find our app helpful!{"\n"}{"\n"}
+          We are a team of five college students, and this application is developed by us as a class project. {"\n"}{"\n"}
+          This is our very first React Native application. None of us had previous experience developing mobile applications. We put a lot of efforts into this development and finnaly are able to bring this in front of you. {"\n"}{"\n"}
+          This being said, this app may still have a lot of room for improvement, and we will work extra hard to enhance your experience using the app.Meanwhile, enjoy TEXTIFYING!{"\n"}{"\n"}
+          Thanks for using SCANster.{"\n"}{"\n"}{"\n"}
+          SCANster Team
+        </Text>
         </ScrollView>
       </View>
       </ImageBackground>
@@ -118,26 +49,14 @@ export default class BlankScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    padding: 8,
   },
-  contentContainer: {
-    paddingTop: 30,
-    alignItems: 'center',
+  body: {
+    margin: 24,
+    fontSize: 18,
+    fontFamily: 'Helvetica',
+    fontWeight:'bold',
   },
-  highlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  highlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-    alignItems: 'center',
-  },
-  list: {
-    flex: 1,
-  },
-  photo: {
-    margin: 5,
-    width: 150,
-    height: 150,
-  }
 });
