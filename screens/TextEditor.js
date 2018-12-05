@@ -13,17 +13,18 @@ import {
   KeyboardAvoidingView,
   AsyncStorage,
   TouchableWithoutFeedback,
+  AlertIOS,
+  Share,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import Share from 'react-native-share';
+//import Share from 'react-native-share';
 import { RichTextEditor, RichTextToolbar, actions } from 'react-native-zss-rich-text-editor';
 import RNFS from 'react-native-fs';
 import { Content, Spinner, Container, Header, Icon, Left, Body, Right, Button, Title, Card, CardItem } from 'native-base';
-// import KeyboardSpacer from 'react-native-keyboard-spacer';
-// import DismissKeyboard from 'dismissKeyboard';
 
 const screenHeight = Dimensions.get('window').height
 const screenWidth = Dimensions.get('window').width
+
 
 export default class TextEditor extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -32,8 +33,8 @@ export default class TextEditor extends React.Component {
         return {
             title: 'Text Editor',
             headerTintColor: 'black',
-            headerRight: <TouchableOpacity onPress={this.saveAndShare} style={{ marginRight: 10 }}>
-                <Text>Done</Text>
+            headerRight: <TouchableOpacity onPress={navigation.state.params.handlesave} style={{ marginRight: 10 }}>
+                <Text>SAVE</Text>
             </TouchableOpacity>,
             headerLeft: <TouchableOpacity onPress={() => goBack(null)} style={{ marginRight: 10 }}>
                 <Text>Cancel</Text>
@@ -46,14 +47,19 @@ export default class TextEditor extends React.Component {
         this.getHTML = this.getHTML.bind(this);
         this.state = {
             isToolShow: true,
+            newText: "",
         }
+        this.props.navigation.setParams({handlesave: this.saveAndShare})
     }
     saveAndShare = async () => {
-      Share.share(
-            {message: JSON.stringfy(getHTML()),
-            }
-      ).then(result => console.log(result)).catch(errorMsg => console.log(errorMsg));
-
+      // this.getHTML();
+      // console.log(newText);
+      // console.log(this.state);
+      this.saveText();
+      // Share.share(
+      //       {message: JSON.stringify(this.getHTML()),
+      //       }
+      // ).then(result => console.log(result)).catch(errorMsg => console.log(errorMsg));
     }
 
     goback = () => {
@@ -63,14 +69,57 @@ export default class TextEditor extends React.Component {
         this.setState({ isToolShow: !this.state.isToolShow })
     }
 
-    async getHTML() {
+    getHTML = async () => {
+
         const contentHtml = await this.richtext.getContentHtml();
-        return contentHtml;
+        // console.log(contentHtml.length);
+        var text = "";
+        for(let i = 0; i < contentHtml.length; i++) {
+          text += contentHtml[i];
+        }
+        // console.log(text);
+        this.setState({newText: text});
+        // return text;
+    }
+    saveText = async () => {
+      const contentHtml = await this.richtext.getContentHtml();
+      // console.log(contentHtml.length);
+      var textoSave = "";
+      for(let i = 0; i < contentHtml.length; i++) {
+        textoSave += contentHtml[i];
+      }
+      const { navigation } = this.props;
+      var today = new Date();
+      var date = today.getFullYear()+'_'+(today.getMonth()+1)+'_'+today.getDate();
+      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      var dateTime = date+'_'+time;
+
+      var path = RNFS.DocumentDirectoryPath + '/scanned/';
+      RNFS.mkdir(path);
+      AlertIOS.prompt(
+        'Please Name Your File',
+        null,
+        text => this.createFile({text, path, textoSave})
+      );
+    };
+
+    createFile = ({text, path, textoSave}) => {
+      const { navigation } = this.props;
+
+      RNFS.writeFile(path + text + '.txt', textoSave, 'utf8')
+      .then((success) => {
+        console.log(textoSave);
+        navigation.navigate('Main');
+        console.log('FILE WRITTEN!');
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
     }
 
     renderTextEditor() {
         var testString = this.props.navigation.getParam('initialText', 'NO-TEXT');
-        console.log("In Editor: " + testString);
+        // console.log("In Editor: " + testString);
         return (
             <Container style={Platform.OS == 'ios' ? {} : styles.container}>
                 <View style={{ width: screenWidth, marginVertical: 70, height: screenHeight - 185, borderColor: '#666', borderWidth: 0.5, borderRadius: 2 }}>

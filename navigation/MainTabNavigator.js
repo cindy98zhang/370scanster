@@ -39,12 +39,7 @@ const CameraStack = createStackNavigator(
         gesturesEnabled: false
       },
     },
-    // toFile: {
-    //   screen: FileScreen,
-    //   navigationOptions: {
-    //     gesturesEnabled: false
-    //   },
-    // }
+
   },
 );
 

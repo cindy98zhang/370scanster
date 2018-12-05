@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   body: {
+    justifyContent:'center',
     margin: 24,
     fontSize: 18,
     fontFamily: 'Helvetica',
