@@ -22,8 +22,10 @@ After this is complete, navigate to ios/ directory. You should see a file called
 pod install
 ```
 After this is complete, double-click Scanster.xcworkspace or open this workspace from XCode. Then navigate back to the root directory.
+# 4. Change header path
+After installing all the dependencies, we need to make sure XCode could find all the headers. Click on our project on the left column -> Libraries -> React-Native-Webview-Bridge.xcodeprj -> Build Settings -> Search Paths-> Header Search Paths. Double click to change the path to "{SRCROOT}/../../../ios/Pods/Headers/Public" and make it recursive. After the path is changed this added external library should be able to use our Pods dependencies. 
 
-# 4. Build and run
+# 5. Build and run
 Make sure you are in the root directory. Also, make sure XCode open the workspace correctly. You should see Scanster as well as Pods in the workspace. After all the depencies are installed, you are ready to start running our app. There are a few things to keep in mind:
 * Make sure you open the Scanster.xcworkspace, not Scanster.xcodeproj. The latter won't be able to find the dependencies from the Podfile and will fail to build.
 * You need to have XCode 10. Other versions of XCode are not tested by our team.
